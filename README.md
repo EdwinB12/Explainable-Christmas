@@ -2,7 +2,19 @@
 
 
 ## The Project
-We used the [TGS Salt Identification Challenge](https://www.kaggle.com/c/tgs-salt-identification-challenge) data along with a U-Net model trained from scratch using Tensorflow's library. Additionally, we created three seismic attributes from the seismic data to use as new features while training the model. Finally, we used [Shap library](https://github.com/slundberg/shap) to calculate SHAP values and obtain a measure of how important each feature is. This allowed to evaluate possible biases and if the new features were contributing to the predictions and not being underused.
+This repository demonstrates how SHAP values can be obtained to give a measure of how important each feature is in a  multi-input image segmentation task
+The segmentation challenge used is the [TGS Salt Identification Challenge](https://www.kaggle.com/c/tgs-salt-identification-challenge). 
+The theory, method and results are summarised in the [presentations](Presentations) folder.
+The steps to reproduce this work are: 
+
+1. Download Data from the Kaggle website following the link above.
+2. Segregate the data into train, validation and test datasets. 
+3. Produce attribute images 
+4. Pre-Process the data for input into the model
+5. Build Model
+6. Train Model
+7. Generate Shap Values for a small subset of the data
+8. Evaluate model performance and Shap values
 
 
 ## Training and Explaining Pipelines
