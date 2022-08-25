@@ -1,103 +1,106 @@
 import time
 from pathlib import Path
-
+from sklearn import preprocessing
 import bruges as bg
 import numpy as np
 from scipy.ndimage import generic_filter, sobel
 from skimage import io
 from skimage.transform import resize
 
-from utils import rms, attribute_wrapper, run_attributes, clean_and_resize_data
+import read_and_split_data
 
 
 def rms(data):
     data = np.asanyarray(data)
     return np.sqrt(np.sum(data**2) / data.size)
 
+
 def attribute_wrapper(input_data, attribute_func, output_shape=None, **kwargs):
-    image = np.reshape(input_data, newshape=(1, 101, 101))
+    image = np.reshape(input_data, newshape=(1, input_data.shape[0], input_data.shape[1]))
     attribute = attribute_func(image, **kwargs)
     
     if output_shape is None:
         return np.reshape(attribute, input_data.shape)
     else:
         return np.reshape(attribute, output_shape)
+
     
-def run_attributes(input_data):
-    energy = attribute_wrapper(input_data, bg.attribute.energy, duration=5, dt=1)
-    semb = attribute_wrapper(input_data, bg.attribute.similarity, duration=5, dt=1, step_out=3, kind='gst')
-    sobel_image = sobel(input_data)
+def get_attributes_for_single_image(image):
+    energy = attribute_wrapper(image, bg.attribute.energy, duration=5, dt=1)
+    semb = attribute_wrapper(image, bg.attribute.similarity, duration=5, dt=1, step_out=3, kind='gst')
+    sobel_image = sobel(image)
 
-    return np.stack([input_data, energy, semb, sobel_image], axis=-1)
+    return np.stack([image, energy, semb, sobel_image], axis=-1)
 
-def clean_and_resize_data(attributes, y):
-    attributes_x_reshaped = np.zeros(shape=(3747, 64, 64, 4), dtype=np.float32)
-    attributes_y_reshaped = np.zeros(shape=(3747, 64, 64, 1), dtype=np.float32)
 
-    j=0
-    k=0
+def get_attributes_for_multiple_images(multiple_image):
+    now = time.time()
+    attributes = np.zeros(shape=(*multiple_image.shape[:3], 4), dtype=np.float32)
+    for index in range(multiple_image.shape[0]):
+        attributes[index] = get_attributes_for_single_image(multiple_image[index])
+
+        if index % 500 == 0:
+            print(f'{index}th Image Complete in {(time.time() - now)/60} Minutes')
+
+    print(f'Attributes Finished')
+    return attributes
+
+
+def remove_nan_samples_and_resize(attributes, y, output_shape):
+    attributes_x_reshaped = []
+    y_reshaped = []
+
     for i in range(attributes.shape[0]):
-        if (np.isnan(attributes[i]).any()):
-            j+=1
+        if np.isnan(attributes[i]).any():
+            pass
         else:
-            attributes_x_reshaped[k] = resize(attributes[i], (64, 64, 4), anti_aliasing=True)
-            attributes_y_reshaped[k] = resize(y[i], (64, 64, 1), anti_aliasing=True)
-            k+=1
-            
-        if i % 100 == 0:
-            print(i)
-    
-    return attributes_x_reshaped, attributes_y_reshaped
+            attributes_x_reshaped.append(resize(attributes[i], (*output_shape, 4), anti_aliasing=True))
+            y_reshaped.append(resize(y[i], (*output_shape, 1), anti_aliasing=True))
+
+    return np.asarray(attributes_x_reshaped, dtype=np.float32), np.asarray(y_reshaped, dtype=np.float32)
 
 
 def main():
-    """ Create numpy arrays from the train images and labels and create attributes."""
-    train_images = []
-    train_labels = []
 
-    # print(Path.cwd())
-    train_path = Path('pipeline/data/train/images')
-    labels_path = Path('pipeline/data/train/masks')
+    # Read and Split Data
+    x_train, y_train, x_valid, y_valid, x_test, y_test = read_and_split_data.run()
 
-    for image in train_path.iterdir():
-        train_data = io.imread(image, as_gray=True)
-        train_images.append(train_data)
-        label_data = io.imread(labels_path / image.name, as_gray=True)
-        train_labels.append(label_data)
+    # Generate Attributes for training, validation and test datasets
+    x_train = get_attributes_for_multiple_images(x_train[:, :, :, 0])
+    x_valid = get_attributes_for_multiple_images(x_valid[:, :, :, 0])
+    x_test = get_attributes_for_multiple_images(x_test[:, :, :, 0])
 
-    x_data = np.array(train_images)
-    y_data = np.array(train_labels)
-    
-    np.save("pipeline/outputs/x.npy", x_data)
-    np.save("pipeline/outputs/y.npy", y_data)
+    x_train, y_train = remove_nan_samples_and_resize(x_train, y_train, (32, 32))
+    x_valid, y_valid = remove_nan_samples_and_resize(x_valid, y_valid, (32, 32))
+    x_test, y_test = remove_nan_samples_and_resize(x_test, y_test, (32, 32))
 
-    n_samples, img_x, img_y = x_data.shape[0], 101, 101
-    n_channels = 4
-    
-    # create attributes
-    now = time.time()
-    attributes = np.zeros(shape=(n_samples, img_x, img_y, n_channels), dtype=np.float32)
-    for index in range(x_data.shape[0]):
-        attributes[index] = run_attributes(x_data[index])
+    print(x_train.shape, y_train.shape)
+    print(x_valid.shape, y_valid.shape)
+    print(x_test.shape, y_test.shape)
 
-        if index%5 == 0:
-           print(f'{index}th Image Complete in {(time.time() - now)/60} Minutes')
-        
-    np.save("pipeline/outputs/attributes.npy", attributes)
+    _, x_img_x, x_img_y, x_nchannels = x_train.shape
 
-    attributes_x_reshaped, y_resized = clean_and_resize_data(attributes, y_data)
-    np.save('pipeline/outputs/attributes_x_64x64.npy', attributes_x_reshaped)
-    np.save('pipeline/outputs/y_64x64.npy', y_resized)
+    # Fit transformer to the training set then apply it to test set
+    transformer = preprocessing.PowerTransformer()
+    x_train = transformer.fit_transform(x_train.reshape(-1, 4))
+    x_train = x_train.reshape(-1, x_img_x, x_img_y, x_nchannels)
 
-    # Resizing it once again from 64x64 to 16x16 due to computational limits
-    attributes_x_reshaped = attributes_x_reshaped[:, ::4, ::4, :]
-    y_resized = y_resized[:, ::4, ::4]
+    x_valid = transformer.transform(x_valid.reshape(-1, 4))
+    x_valid = x_valid.reshape(-1, x_img_x, x_img_y, x_nchannels)
 
-    np.save('pipeline/outputs/attributes_x_16x16.npy', attributes_x_reshaped)
-    np.save('pipeline/outputs/y_16x16.npy', y_resized)
+    x_test = transformer.transform(x_test.reshape(-1, 4))
+    x_test = x_test.reshape(-1, x_img_x, x_img_y, x_nchannels)
+
+    print(f'Datasets are pre-conditioned')
+
+    np.save('x_train', x_train)
+    np.save('y_train', y_train)
+    np.save('x_valid', x_valid)
+    np.save('y_valid', y_valid)
+    np.save('x_test', x_test)
+    np.save('y_test', y_test)
+
 
 if __name__ == "__main__":
 
     main()
-
-
