@@ -82,13 +82,13 @@ def main():
 
     # Fit transformer to the training set then apply it to test set
     transformer = preprocessing.PowerTransformer()
-    x_train = transformer.fit_transform(x_train.reshape(-1, 4))
+    x_train = transformer.fit_transform(x_train.reshape(-1, x_nchannels))
     x_train = x_train.reshape(-1, x_img_x, x_img_y, x_nchannels)
 
-    x_valid = transformer.transform(x_valid.reshape(-1, 4))
+    x_valid = transformer.transform(x_valid.reshape(-1, x_nchannels))
     x_valid = x_valid.reshape(-1, x_img_x, x_img_y, x_nchannels)
 
-    x_test = transformer.transform(x_test.reshape(-1, 4))
+    x_test = transformer.transform(x_test.reshape(-1, x_nchannels))
     x_test = x_test.reshape(-1, x_img_x, x_img_y, x_nchannels)
 
     print(f'Datasets are pre-conditioned')
