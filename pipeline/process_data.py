@@ -39,7 +39,7 @@ def get_attributes_for_multiple_images(multiple_image):
     for index in range(multiple_image.shape[0]):
         attributes[index] = get_attributes_for_single_image(multiple_image[index])
 
-        if index % 500 == 0:
+        if index % 100 == 0:
             print(f'{index}th Image Complete in {(time.time() - now)/60} Minutes')
 
     print(f'Attributes Finished')
@@ -65,19 +65,43 @@ def main():
     # Read and Split Data
     x_train, y_train, x_valid, y_valid, x_test, y_test = read_and_split_data.run()
 
-    # Generate Attributes for training, validation and test datasets
-    x_train = get_attributes_for_multiple_images(x_train[:, :, :, 0])
-    x_valid = get_attributes_for_multiple_images(x_valid[:, :, :, 0])
-    x_test = get_attributes_for_multiple_images(x_test[:, :, :, 0])
-
-    x_train, y_train = remove_nan_samples_and_resize(x_train, y_train, (32, 32))
-    x_valid, y_valid = remove_nan_samples_and_resize(x_valid, y_valid, (32, 32))
-    x_test, y_test = remove_nan_samples_and_resize(x_test, y_test, (32, 32))
-
+    x_train = resize(x_train, output_shape=(len(x_train), 48, 48, 1), anti_aliasing=True)
+    y_train = resize(y_train, output_shape=(len(y_train), 48, 48, 1), anti_aliasing=True)
+    x_valid = resize(x_valid, output_shape=(len(x_valid), 48, 48, 1), anti_aliasing=True)
+    y_valid = resize(y_valid, output_shape=(len(y_valid), 48, 48, 1), anti_aliasing=True)
+    x_test = resize(x_test, output_shape=(len(x_test), 48, 48, 1), anti_aliasing=True)
+    y_test = resize(y_test, output_shape=(len(y_test), 48, 48, 1), anti_aliasing=True)
+    print('Data is Resized')
     print(x_train.shape, y_train.shape)
     print(x_valid.shape, y_valid.shape)
     print(x_test.shape, y_test.shape)
 
+    # Generate Attributes for training, validation and test datasets
+    x_train = get_attributes_for_multiple_images(x_train[:, :, :, 0])
+    x_valid = get_attributes_for_multiple_images(x_valid[:, :, :, 0])
+    x_test = get_attributes_for_multiple_images(x_test[:, :, :, 0])
+    print('Attributes Built')
+    print(x_train.shape, y_train.shape)
+    print(x_valid.shape, y_valid.shape)
+    print(x_test.shape, y_test.shape)
+
+    nan_idx = np.isnan(x_train).any(axis=(1, 2, 3))
+    x_train = x_train[~nan_idx]
+    y_train = y_train[~nan_idx]
+
+    nan_idx = np.isnan(x_valid).any(axis=(1, 2, 3))
+    x_valid = x_valid[~nan_idx]
+    y_valid = y_valid[~nan_idx]
+
+    nan_idx = np.isnan(x_test).any(axis=(1, 2, 3))
+    x_test = x_test[~nan_idx]
+    y_test = y_test[~nan_idx]
+    print('Nans Dropped')
+
+    print(x_train.shape, y_train.shape)
+    print(x_valid.shape, y_valid.shape)
+    print(x_test.shape, y_test.shape)
+    
     _, x_img_x, x_img_y, x_nchannels = x_train.shape
 
     # Fit transformer to the training set then apply it to test set
@@ -90,6 +114,11 @@ def main():
 
     x_test = transformer.transform(x_test.reshape(-1, x_nchannels))
     x_test = x_test.reshape(-1, x_img_x, x_img_y, x_nchannels)
+
+    # Change Y labels to 0s and 1s
+    y_train = np.where(y_train == 0, 0, 1)
+    y_valid = np.where(y_valid == 0, 0, 1)
+    y_test = np.where(y_test == 0, 0, 1)
 
     print(f'Datasets are pre-conditioned')
 

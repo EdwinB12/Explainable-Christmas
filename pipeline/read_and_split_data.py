@@ -43,8 +43,8 @@ def run():
     print(f'Masks have been loaded with shape: {masks.shape}')
 
     # Reduce dimensions for speed up of training and shape
-    images = images[:, ::4, ::4]
-    masks = masks[:, ::4, ::4]
+    images = images[:, ::2, ::2]
+    masks = masks[:, ::2, ::2]
     print(f'Images have been resampled. Images now have shape: {images.shape}')
     print(f'Masks have been resampled. Masks now have shape: {masks.shape}')
 
