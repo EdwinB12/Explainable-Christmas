@@ -1,17 +1,44 @@
 import mlflow
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input
-
 from build_model import build_model, build_simpler_model
+
+
+def build_pipeline(input_data, BATCH_SIZE, seed=None, shuffle=False):
+    dataset = tf.data.Dataset.from_tensor_slices(input_data)
+    options = tf.data.Options()
+    options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.DATA # Avoid warning messages about sharding
+
+    if shuffle:
+        dataset = dataset.shuffle(buffer_size=int(len(input_data)), seed=seed)
+    else:
+        pass
+
+    return dataset.batch(batch_size=BATCH_SIZE).prefetch(tf.data.AUTOTUNE).with_options(options)
 
 
 def main():
 
+    # Setup mlflow autolog
     mlflow.tensorflow.autolog()
+    mlflow.set_experiment('Test1')
 
+    # Set Training Parameters - TODO: Put all parameters into a config file
+    BATCH_SIZE = 32
+    EPOCHS = 200
+    KERNEL_SIZE = (5, 5)
+    INITIAL_NUM_OF_FILTERS = 8
+    DROPOUT_RATE = 0.5
+    LOSS_FUNCTION = 'binary_focal_crossentropy'
+    LEARNING_RATE = 1e-3
+    PATIENCE = 10
+    SEED = 42
+    INPUT_SHAPE = (48, 48, 4)
+    tf.random.set_seed(SEED)
+
+    # Load Data
     x_train = np.load("x_train.npy")
     y_train = np.load("y_train.npy")
     x_valid = np.load("x_valid.npy")
@@ -19,16 +46,14 @@ def main():
     x_test = np.load("x_test.npy")
     y_test = np.load("y_test.npy")
 
-    img_size_target, number_of_channels = x_train.shape[1], x_train.shape[-1]
-    kernel_size = (5, 5) # TODO: should be in a config file
-    initial_number_of_filters = 8 # TODO: should be in a config file
+    # Setup Pipelines
+    train_dataset = build_pipeline((x_train, y_train), BATCH_SIZE=BATCH_SIZE, seed=SEED)
+    valid_dataset = build_pipeline((x_valid, y_valid), BATCH_SIZE=BATCH_SIZE, shuffle=False)
+    test_dataset = build_pipeline((x_test, y_test), BATCH_SIZE=BATCH_SIZE, shuffle=False)
 
-    input_layer = Input((img_size_target, img_size_target, number_of_channels))
-    dropout_rate = 0.5
-    output_layer = build_simpler_model(
-        input_layer, initial_number_of_filters, kernel_size, dropout_rate
-    )
-
+    # set training up on multiple gpus
+    input_layer = Input(INPUT_SHAPE)
+    output_layer = build_simpler_model(input_layer, INITIAL_NUM_OF_FILTERS, KERNEL_SIZE, DROPOUT_RATE)
     model = Model(input_layer, output_layer)
 
     METRICS = [
@@ -42,37 +67,26 @@ def main():
             tf.keras.metrics.AUC(name="auc"),
         ]
 
-    loss_function = 'binary_focal_crossentropy' # TODO: should be in a config file
     model.compile(
-        loss=loss_function,
-        optimizer=tf.keras.optimizers.Adam(lr=1e-3),
-        metrics=METRICS,
-    )
+            loss=LOSS_FUNCTION,
+            optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+            metrics=METRICS,
+        )
 
     early_stop = tf.keras.callbacks.EarlyStopping(
-        patience=30, # TODO: should be in a config file
-        monitor="val_auc", # TODO: should be in a config file
+        patience=PATIENCE,
+        monitor="val_auc",
         mode="max",
         restore_best_weights=True,
     )
 
-    callbacks_list = [early_stop]
+    mlflow.log_param('Num_of_parameters', model.count_params())
 
-    BATCH_SIZE = 128
-    EPOCHS = 200
+    history = model.fit(train_dataset, validation_data=valid_dataset,
+                        epochs=EPOCHS, callbacks=[early_stop], batch_size=BATCH_SIZE, verbose=1)
+    
+    model.save("model")
 
-    history = model.fit(
-        x_train,
-        y_train,
-        epochs=EPOCHS,
-        callbacks=callbacks_list,
-        batch_size=BATCH_SIZE,
-        verbose=1,
-        validation_split=0.2,
-        )
-    
-    model.save("pipeline/model.h5")
-    
 
 if __name__ == "__main__":
 
