@@ -12,13 +12,12 @@ def main():
 
     mlflow.tensorflow.autolog()
 
-    x_train = np.load("pipeline/outputs/x_train_transformed.npy")
-    x_test = np.load("pipeline/outputs/x_test_transformed.npy")
-    y_train = np.load("pipeline/outputs/y_train_transformed.npy")
-    y_test = np.load("pipeline/outputs/y_test_transformed.npy")
-
-    y_train = np.where(y_train == 0, 0, 1)
-    y_test = np.where(y_test == 0, 0, 1)
+    x_train = np.load("x_train.npy")
+    y_train = np.load("y_train.npy")
+    x_valid = np.load("x_valid.npy")
+    y_valid = np.load("y_valid.npy")
+    x_test = np.load("x_test.npy")
+    y_test = np.load("y_test.npy")
 
     img_size_target, number_of_channels = x_train.shape[1], x_train.shape[-1]
     kernel_size = (5, 5) # TODO: should be in a config file
@@ -72,7 +71,7 @@ def main():
         validation_split=0.2,
         )
     
-    model.save("pipeline/outputs/model.h5")
+    model.save("pipeline/model.h5")
     
 
 if __name__ == "__main__":
