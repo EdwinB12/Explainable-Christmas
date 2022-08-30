@@ -17,8 +17,8 @@ def main():
     flattened_model.add(tf.keras.layers.Flatten())
     flattened_model.compile(loss="binary_focal_crossentropy")
 
-    x_train = np.load("x_train.npy")
-    x_test = np.load("x_test.npy")
+    x_train = np.load("x_train.npy")[:, ::4, ::4, :]
+    x_test = np.load("x_test.npy")[:, ::4, ::4, :]
 
     np.random.seed(42) # always return the same background samples
     background_indexes = np.random.choice(range(x_train.shape[0]), size=100, replace=False)
@@ -28,7 +28,7 @@ def main():
     ]
 
     explanation_model = shap.DeepExplainer(flattened_model, background_samples)
-    expected_values = np.reshape(explanation_model.expected_value, (48, 48))
+    expected_values = np.reshape(explanation_model.expected_value, (12, 12))
     np.save("expected_values.npy", expected_values)
 
     chosen_indexes = [517, 127, 124, 313, 259]

@@ -88,25 +88,25 @@ def build_simpler_model(input_layer, number_of_filters, kernel_size, dropout_rat
     pool2 = MaxPooling2D((2, 2))(conv2)
     pool2 = Dropout(dropout_rate)(pool2)
 
-    # sampleSize/4 -> sampleSize/8
-    conv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(pool2)
-    conv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(conv3)
-    pool3 = MaxPooling2D((2, 2))(conv3)
-    pool3 = Dropout(dropout_rate)(pool3)
+    # # sampleSize/4 -> sampleSize/8
+    # conv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(pool2)
+    # conv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(conv3)
+    # pool3 = MaxPooling2D((2, 2))(conv3)
+    # pool3 = Dropout(dropout_rate)(pool3)
 
     # Bottleneck
-    convm = Conv2D(number_of_filters * 16, kernel_size, activation="relu", padding="same")(pool3)
+    convm = Conv2D(number_of_filters * 16, kernel_size, activation="relu", padding="same")(pool2)
     convm = Conv2D(number_of_filters * 16, kernel_size, activation="relu", padding="same")(convm)
 
-    # sampleSize/8 -> sampleSize/4
-    deconv3 = Conv2DTranspose(number_of_filters * 4, kernel_size, strides=(2, 2), padding="same")(convm)
-    uconv3 = concatenate([deconv3, conv3])
-    uconv3 = Dropout(dropout_rate)(uconv3)
-    uconv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(uconv3)
-    uconv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(uconv3)
+    # # sampleSize/8 -> sampleSize/4
+    # deconv3 = Conv2DTranspose(number_of_filters * 4, kernel_size, strides=(2, 2), padding="same")(convm)
+    # uconv3 = concatenate([deconv3, conv3])
+    # uconv3 = Dropout(dropout_rate)(uconv3)
+    # uconv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(uconv3)
+    # uconv3 = Conv2D(number_of_filters * 4, kernel_size, activation="relu", padding="same")(uconv3)
 
     # sampleSize/4 -> sampleSize/2
-    deconv2 = Conv2DTranspose(number_of_filters * 2, kernel_size, strides=(2, 2), padding="same")(uconv3)
+    deconv2 = Conv2DTranspose(number_of_filters * 2, kernel_size, strides=(2, 2), padding="same")(convm)
     uconv2 = concatenate([deconv2, conv2])
     uconv2 = Dropout(dropout_rate)(uconv2)
     uconv2 = Conv2D(number_of_filters * 2, kernel_size, activation="relu", padding="same")(uconv2)

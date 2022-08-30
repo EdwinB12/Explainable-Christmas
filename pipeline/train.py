@@ -35,16 +35,16 @@ def main():
     LEARNING_RATE = 1e-3
     PATIENCE = 10
     SEED = 42
-    INPUT_SHAPE = (48, 48, 4)
+    INPUT_SHAPE = (12, 12, 4)
     tf.random.set_seed(SEED)
 
     # Load Data
-    x_train = np.load("x_train.npy")
-    y_train = np.load("y_train.npy")
-    x_valid = np.load("x_valid.npy")
-    y_valid = np.load("y_valid.npy")
-    x_test = np.load("x_test.npy")
-    y_test = np.load("y_test.npy")
+    x_train = np.load("x_train.npy")[:, ::4, ::4, :]
+    y_train = np.load("y_train.npy")[:, ::4, ::4, :]
+    x_valid = np.load("x_valid.npy")[:, ::4, ::4, :]
+    y_valid = np.load("y_valid.npy")[:, ::4, ::4, :]
+    x_test = np.load("x_test.npy")[:, ::4, ::4, :]
+    y_test = np.load("y_test.npy")[:, ::4, ::4, :]
 
     # Setup Pipelines
     train_dataset = build_pipeline((x_train, y_train), BATCH_SIZE=BATCH_SIZE, seed=SEED)
