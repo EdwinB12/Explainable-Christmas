@@ -5,6 +5,8 @@ import numpy as np
 from scipy.ndimage import sobel
 from skimage.transform import resize
 import read_and_split_data
+import pickle
+import os
 
 
 def rms(data):
@@ -119,12 +121,20 @@ def main():
 
     print(f'Datasets are pre-conditioned')
 
+    if os.path.exists('outputs'):
+        pass
+    else:
+        os.mkdir('outputs')
+
     np.save('outputs/x_train', x_train)
     np.save('outputs/y_train', y_train)
     np.save('outputs/x_valid', x_valid)
     np.save('outputs/y_valid', y_valid)
     np.save('outputs/x_test', x_test)
     np.save('outputs/y_test', y_test)
+
+    with open('outputs/x_transformer.pkl', 'wb') as file:
+        pickle.dump(transformer, file)
 
 
 if __name__ == "__main__":
