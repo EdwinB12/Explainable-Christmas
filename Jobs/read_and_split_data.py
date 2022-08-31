@@ -53,7 +53,7 @@ def run():
 
     # train-test split
     x_train, x_test, y_train, y_test = model_selection.train_test_split(
-        images, masks, test_size=0.2
+        images, masks, test_size=0.2, random_state=42
         )
 
     del images
@@ -61,7 +61,7 @@ def run():
 
     # train-test split
     x_train, x_valid, y_train, y_valid = model_selection.train_test_split(
-        x_train, y_train, test_size=0.2
+        x_train, y_train, test_size=0.2, random_state=42
         )
 
     print(f'Data is split into train, validation and test datasets with number of samples:'

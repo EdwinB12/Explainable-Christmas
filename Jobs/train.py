@@ -23,7 +23,7 @@ def main():
 
     # Setup mlflow autolog
     mlflow.tensorflow.autolog()
-    mlflow.set_experiment('Test1')
+    mlflow.set_experiment('train3')
 
     # Set Training Parameters - TODO: Put all parameters into a config file
     BATCH_SIZE = 32
@@ -35,16 +35,16 @@ def main():
     LEARNING_RATE = 1e-3
     PATIENCE = 10
     SEED = 42
-    INPUT_SHAPE = (12, 12, 4)
+    INPUT_SHAPE = (24, 24, 4)
     tf.random.set_seed(SEED)
 
     # Load Data
-    x_train = np.load("x_train.npy")[:, ::4, ::4, :]
-    y_train = np.load("y_train.npy")[:, ::4, ::4, :]
-    x_valid = np.load("x_valid.npy")[:, ::4, ::4, :]
-    y_valid = np.load("y_valid.npy")[:, ::4, ::4, :]
-    x_test = np.load("x_test.npy")[:, ::4, ::4, :]
-    y_test = np.load("y_test.npy")[:, ::4, ::4, :]
+    x_train = np.load("outputs/x_train.npy")[:, ::2, ::2, :]
+    y_train = np.load("outputs/y_train.npy")[:, ::2, ::2, :]
+    x_valid = np.load("outputs/x_valid.npy")[:, ::2, ::2, :]
+    y_valid = np.load("outputs/y_valid.npy")[:, ::2, ::2, :]
+    x_test = np.load("outputs/x_test.npy")[:, ::2, ::2, :]
+    y_test = np.load("outputs/y_test.npy")[:, ::2, ::2, :]
 
     # Setup Pipelines
     train_dataset = build_pipeline((x_train, y_train), BATCH_SIZE=BATCH_SIZE, seed=SEED)
@@ -85,7 +85,7 @@ def main():
     history = model.fit(train_dataset, validation_data=valid_dataset,
                         epochs=EPOCHS, callbacks=[early_stop], batch_size=BATCH_SIZE, verbose=1)
     
-    model.save("model")
+    model.save("model3")
 
 
 if __name__ == "__main__":
