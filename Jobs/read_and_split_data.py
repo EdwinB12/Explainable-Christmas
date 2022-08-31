@@ -38,7 +38,7 @@ def plot_mask(mask, ax, title):
 def run():
     """ Segregate and transform the data into training and testing sets."""
 
-    images, masks = load_data_into_arrays('../Data/train')
+    images, masks = load_data_into_arrays('Data/train')
     print(f'Images have been loaded with shape: {images.shape}')
     print(f'Masks have been loaded with shape: {masks.shape}')
 
