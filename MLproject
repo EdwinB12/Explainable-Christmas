@@ -2,16 +2,13 @@ name: explainable salt
 
 entry_points:
     train:
-        command: "python pipeline/process_data.py && \
-            python pipeline/segregate.py && \
-            python pipeline/train.py"
+        command: "python Jobs/process_data.py && \
+            python Jobs/train.py"
 
-    explain:
-        command: "python pipeline/process_data.py && \
-            python pipeline/segregate.py && \
-            python pipeline/train.py && \
-            python pipeline/explain.py"
+    run_all:
+        command: "python Jobs/process_data.py && \
+            python Jobs/train.py && \
+            python Jobs/explain.py"
 
-    segregate_train:
-        command: "python pipeline/segregate.py && \
-            python pipeline/train.py"
+    data_prep:
+        command: "python Jobs/process_data.py"
