@@ -53,8 +53,10 @@ Run the following command to observe the details of each experiment:
 `mlflow ui`
 
 ## Limitations
+
 - Generating SHAP values is very slow as the workflow does not use GPUs. Therefore, the input datas image size is 
 to be reduced from 101x101 to 24x24. This significantly harms performance of the CNN to perform salt segmentation.
+
 
 - As the performance of the CNN to perform salt segmentation was not the primary goal of the project, there are several
 changes to the approach that would likely improve the baseline performance. 

@@ -1,12 +1,9 @@
 import time
-from pathlib import Path
 from sklearn import preprocessing
 import bruges as bg
 import numpy as np
-from scipy.ndimage import generic_filter, sobel
-from skimage import io
+from scipy.ndimage import sobel
 from skimage.transform import resize
-
 import read_and_split_data
 
 
@@ -122,12 +119,12 @@ def main():
 
     print(f'Datasets are pre-conditioned')
 
-    np.save('x_train', x_train)
-    np.save('y_train', y_train)
-    np.save('x_valid', x_valid)
-    np.save('y_valid', y_valid)
-    np.save('x_test', x_test)
-    np.save('y_test', y_test)
+    np.save('outputs/x_train', x_train)
+    np.save('outputs/y_train', y_train)
+    np.save('outputs/x_valid', x_valid)
+    np.save('outputs/y_valid', y_valid)
+    np.save('outputs/x_test', x_test)
+    np.save('outputs/y_test', y_test)
 
 
 if __name__ == "__main__":

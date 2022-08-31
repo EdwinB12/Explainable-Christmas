@@ -13,7 +13,7 @@ def main():
         "Conv2DBackpropInput"
     ] = shap.explainers._deep.deep_tf.passthrough
 
-    model = tf.keras.models.load_model("model3")
+    model = tf.keras.models.load_model("outputs/model")
 
     flattened_model = tf.keras.models.Sequential()
     flattened_model.add(model)
@@ -34,14 +34,15 @@ def main():
     explanation_model = shap.DeepExplainer(flattened_model, background_samples)
     expected_values = np.reshape(explanation_model.expected_value, (24, 24))
     print(f'Expected values took {(time.time() - start)/60} Minutes to create')
-    np.save("expected_values5.npy", expected_values)
+    np.save("outputs/expected_values.npy", expected_values)
 
     start = time.time()
     chosen_indexes = [127, 527, 259, 401, 210, 90, 610, 600, 24]
+    print(f'SHAP values for {len(chosen_indexes)} examples are being created. This may take a while. . ')
     shap_values = explanation_model.shap_values(x_test[chosen_indexes, ...])
     shap_values = np.array(shap_values)
     print(f'Shap Values took {(time.time() - start) / 60} Minutes to create')
-    np.save("shap_values5.npy", shap_values)
+    np.save("outputs/shap_values.npy", shap_values)
 
 
 if __name__ == "__main__":

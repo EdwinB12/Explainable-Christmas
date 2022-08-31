@@ -38,7 +38,7 @@ def main():
     INPUT_SHAPE = (24, 24, 4)
     tf.random.set_seed(SEED)
 
-    # Load Data
+    # Load Data - We drop half the pixels to speed up computation
     x_train = np.load("outputs/x_train.npy")[:, ::2, ::2, :]
     y_train = np.load("outputs/y_train.npy")[:, ::2, ::2, :]
     x_valid = np.load("outputs/x_valid.npy")[:, ::2, ::2, :]
@@ -46,16 +46,17 @@ def main():
     x_test = np.load("outputs/x_test.npy")[:, ::2, ::2, :]
     y_test = np.load("outputs/y_test.npy")[:, ::2, ::2, :]
 
-    # Setup Pipelines
+    # Setup Pipelines - The user may want to change the pipeline depending on what device training is running on.
     train_dataset = build_pipeline((x_train, y_train), BATCH_SIZE=BATCH_SIZE, seed=SEED)
     valid_dataset = build_pipeline((x_valid, y_valid), BATCH_SIZE=BATCH_SIZE, shuffle=False)
     test_dataset = build_pipeline((x_test, y_test), BATCH_SIZE=BATCH_SIZE, shuffle=False)
 
-    # set training up on multiple gpus
+    # Build Model
     input_layer = Input(INPUT_SHAPE)
     output_layer = build_simpler_model(input_layer, INITIAL_NUM_OF_FILTERS, KERNEL_SIZE, DROPOUT_RATE)
     model = Model(input_layer, output_layer)
 
+    # Define Metrics
     METRICS = [
             tf.keras.metrics.TruePositives(name="tp"),
             tf.keras.metrics.FalsePositives(name="fp"),
@@ -73,6 +74,7 @@ def main():
             metrics=METRICS,
         )
 
+    # Build early stopping callback
     early_stop = tf.keras.callbacks.EarlyStopping(
         patience=PATIENCE,
         monitor="val_auc",
@@ -80,12 +82,14 @@ def main():
         restore_best_weights=True,
     )
 
+    # Log in MLlFlow the number of parameters in the model
     mlflow.log_param('Num_of_parameters', model.count_params())
 
     history = model.fit(train_dataset, validation_data=valid_dataset,
                         epochs=EPOCHS, callbacks=[early_stop], batch_size=BATCH_SIZE, verbose=1)
-    
-    model.save("model3")
+
+    # Save Model. This will also be saved in Mlruns folder
+    model.save("outputs/model")
 
 
 if __name__ == "__main__":
