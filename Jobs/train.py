@@ -37,6 +37,19 @@ def main():
     INPUT_SHAPE = (24, 24, 4)
     tf.random.set_seed(SEED)
 
+    # Define Metrics
+    METRICS = [
+            tf.keras.metrics.TruePositives(name="tp"),
+            tf.keras.metrics.FalsePositives(name="fp"),
+            tf.keras.metrics.TrueNegatives(name="tn"),
+            tf.keras.metrics.FalseNegatives(name="fn"),
+            tf.keras.metrics.BinaryAccuracy(name="accuracy"),
+            tf.keras.metrics.Precision(name="precision"),
+            tf.keras.metrics.Recall(name="recall"),
+            tf.keras.metrics.AUC(name="auc"),
+            tf.keras.metrics.MeanIoU(2, name="iou")
+        ]
+
     # Load Data - We drop half the pixels to speed up computation
     x_train = np.load("outputs/x_train.npy")[:, ::2, ::2, :]
     y_train = np.load("outputs/y_train.npy")[:, ::2, ::2, :]
@@ -54,18 +67,6 @@ def main():
     input_layer = Input(INPUT_SHAPE)
     output_layer = build_simpler_model(input_layer, INITIAL_NUM_OF_FILTERS, KERNEL_SIZE, DROPOUT_RATE)
     model = Model(input_layer, output_layer)
-
-    # Define Metrics
-    METRICS = [
-            tf.keras.metrics.TruePositives(name="tp"),
-            tf.keras.metrics.FalsePositives(name="fp"),
-            tf.keras.metrics.TrueNegatives(name="tn"),
-            tf.keras.metrics.FalseNegatives(name="fn"),
-            tf.keras.metrics.BinaryAccuracy(name="accuracy"),
-            tf.keras.metrics.Precision(name="precision"),
-            tf.keras.metrics.Recall(name="recall"),
-            tf.keras.metrics.AUC(name="auc"),
-        ]
 
     model.compile(
             loss=LOSS_FUNCTION,

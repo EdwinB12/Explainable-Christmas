@@ -2,7 +2,7 @@ import numpy as np
 import shap
 import tensorflow as tf
 import time
-
+import mlflow
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     x_test = np.load("outputs/x_test.npy")[:, ::2, ::2, :]
 
     np.random.seed(42) # always return the same background samples
-    background_indexes = np.random.choice(range(x_train.shape[0]), size=100, replace=False)
+    background_indexes = np.random.choice(range(x_train.shape[0]), size=1, replace=False)
 
     background_samples = x_train[
         background_indexes.tolist(), ...
@@ -36,12 +36,17 @@ def main():
     np.save("outputs/expected_values.npy", expected_values)
 
     start = time.time()
-    chosen_indexes = [127, 527, 259, 401, 210, 90, 610, 600, 24]
+    #chosen_indexes = [127, 527, 259, 401, 210, 90, 610, 600, 24]
+    chosen_indexes = [127]
     print(f'SHAP values for {len(chosen_indexes)} examples are being created. This may take a while. . ')
     shap_values = explanation_model.shap_values(x_test[chosen_indexes, ...])
     shap_values = np.array(shap_values)
     print(f'Shap Values took {(time.time() - start) / 60} Minutes to create')
     np.save("outputs/shap_values.npy", shap_values)
+    np.save('outputs/test_indexes_used_for_SHAP.npy', np.array(chosen_indexes, dtype='int'))
+
+    # Add all outputs to mlflow
+    mlflow.log_artifacts('outputs', artifact_path="outputs")
 
 
 if __name__ == "__main__":
