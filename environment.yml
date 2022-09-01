@@ -13,3 +13,4 @@ dependencies:
     - numpy
     - imageio
     - scikit-image
+    - jupyter notebook
