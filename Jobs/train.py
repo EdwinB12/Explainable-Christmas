@@ -23,7 +23,6 @@ def main():
 
     # Setup mlflow autolog
     mlflow.tensorflow.autolog()
-    mlflow.set_experiment('train3')
 
     # Set Training Parameters - TODO: Put all parameters into a config file
     BATCH_SIZE = 32

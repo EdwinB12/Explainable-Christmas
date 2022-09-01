@@ -24,7 +24,7 @@ The steps to reproduce this work are:
   - [process_data.py](Jobs/process_data.py) - Steps 3 and 4
   - [train.py](Jobs/train.py) - Step 5
   - [explain.py](Jobs/explain.py) - Step 6. Please note this script can take several hours and is very expensive if images used are large.
-  - [outputs](Jobs/outputs) - This directory holds any midway outputs generated at the end of each script the user may want
+- [outputs](outputs) - This directory holds any midway outputs generated at the end of each script the user may want
   to generate to avoid rerunning sections unnecessarily. 
 
 - [Notebooks](Notebooks): This folder contains a series of jupyter notebooks that is useful for viewing and intepreting results. 
@@ -35,6 +35,7 @@ The steps to reproduce this work are:
   
 
 ## Training and Explaining Pipelines
+We highly recommend using MlFlow to run this repository. 
 To run the entire pipeline using MLFlow, use the following command:
 
 `mlflow run --entry-point run_all --no-conda .`
@@ -45,7 +46,7 @@ The entry points and their commands are described in the MLproject file.
 
 For instance, to run all the steps except the SHAP values, you can use the following command:
 
-`mlflow run --entry-point segregate_train --no-conda .`
+`mlflow run --entry-point train --no-conda .`
 
 Metrics and artifacts, such as the model, of each experiment are automatically logged with MLFlow.
 Run the following command to observe the details of each experiment:
