@@ -13,6 +13,10 @@ The steps to reproduce this work are:
 5. Build and train a Convolutiona Neural Network (CNN) Segmentation Model
 6. Generate Shap Values for a small subset of the data
 
+## Installation
+The repository has been tested with python=3.9. We recommend setting up an environment and using pip to
+install dependencies:
+`pip install -r requirements.txt`
 
 ## Repository Structure
 

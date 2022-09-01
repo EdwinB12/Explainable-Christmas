@@ -1,10 +1,6 @@
-import time
-from pathlib import Path
-
 import bruges as bg
 import numpy as np
-from scipy.ndimage import generic_filter, sobel
-from skimage import io
+from scipy.ndimage import sobel
 from skimage.transform import resize
 
 

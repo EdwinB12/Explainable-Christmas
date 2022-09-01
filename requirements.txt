@@ -1,9 +1,9 @@
 tensorflow==2.8.0
-matplotlib==3.5.0
-ipython==8.3.0
+matplotlib==3.5.2
+ipython==8.4.0
 bruges==0.5.4
 shap==0.40.0
-mlflow==1.26.1
-numpy==1.21.1
-imageio
-scikit-image
+mlflow==1.28.0
+numpy==1.23.0
+imageio==2.19.3
+scikit-image==0.19.3

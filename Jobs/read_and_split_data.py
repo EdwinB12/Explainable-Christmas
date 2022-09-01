@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn import preprocessing, model_selection
+from sklearn import model_selection
 import imageio
 import os
 
