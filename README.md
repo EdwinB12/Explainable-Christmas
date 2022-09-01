@@ -1,9 +1,20 @@
-# Explainable Salt Prediction
+# Explainable Salt Segmentation
+
+**Understanding how each image in a multi-input segmentation task contributes to the predicted mask.**
+
+![Additive_Channel_Contributions](Notebooks/Figures/Additive_Channel_Contributions_resized_for_readme.png)
+
+We start with the expected values (far left), which is similar to the mean label.
+We can then add the contribution from each of the 4 input images (Seismic, Amplitude, Semblance and Sobel)
+until we reach the predicted mask (y_pred), which can be directly compared to the tue mask (y_true).  
 
 ## The Project
 This repository demonstrates how SHAP values can be obtained to give a measure of how important each feature is in a multi-input image segmentation task
 The segmentation challenge used is the [TGS Salt Identification Challenge](https://www.kaggle.com/c/tgs-salt-identification-challenge). 
-The theory, method and results are summarised in the [presentations](Presentations) folder.
+Three different seismic attributes are created from the original input image to create a multi-image input (Amplitude, Semblance and Sobel Filter (edge detection)).
+A Convolutional Neural Network (CNN) is then trained to predict salt masks on unseen examples. Finally, SHAP values are
+calculated on a subset of the training data to explain how each input contriubtes to the final prediction. 
+
 The steps to reproduce this work are: 
 
 1. Download Data from the Kaggle website following the link above.
@@ -32,7 +43,6 @@ install dependencies:
   to generate to avoid rerunning sections unnecessarily. 
 
 - [Notebooks](Notebooks): This folder contains a series of jupyter notebooks that is useful for viewing and intepreting results. 
-  - [Basic_Model_Evaluation](Notebooks/Basic_Model_Evaluation.ipynb) - Evaluating CNN Model, including qualitative and quantitative assessment of mask prediction
   - [Understanding_Shap_Values](Notebooks/Understanding_Shap_Values.ipynb) - Visualising and interpreting the SHAP values and how they could be useful for future use. 
   
 [Presentations](Presentations) - Slides that give more detail into the motivation and decisions made in the project. 
@@ -67,3 +77,9 @@ to be reduced from 101x101 to 24x24. This significantly harms performance of the
 changes to the approach that would likely improve the baseline performance. 
 The CNN is very basic Unet architecture and could probably be improved.
 Likewise, a proper parameter search would also likely improve the segmentation performance significantly. 
+
+
+##Notes
+
+If you're wondering why the repository is called Explainable-Christmas, then this was the name of our team
+for the EAGE-Annual-Hackathon_2022. The members of the team were Edwin Brown and Marcos Jacinto. 
