@@ -7,4 +7,4 @@ mlflow
 numpy
 imageio
 scikit-image
-jupyter notebook
+notebook
