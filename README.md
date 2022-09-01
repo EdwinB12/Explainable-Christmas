@@ -48,7 +48,7 @@ install dependencies:
 [Presentations](Presentations) - Slides that give more detail into the motivation and decisions made in the project. 
   
 
-## Training and Explaining Pipelines
+## Running the code
 We highly recommend using MlFlow to run this repository. 
 To run the entire pipeline using MLFlow, use the following command:
 
