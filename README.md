@@ -58,9 +58,10 @@ This will read, split and process the data, train a CNN model to predict salt ma
 for a few samples. The --no-conda argument will make the current environment the one that is going to be used to run this command.
 The entry points and their commands are described in the MLproject file.
 
-For instance, to run all the steps except the SHAP values, you can use the following command:
+For instance, say the data has been read in, processed and saved to disk, then the user may just want to run the
+training and explain parts:
 
-`mlflow run --entry-point train --no-conda .`
+`mlflow run --entry-point train-explain --no-conda .`
 
 Metrics and artifacts, such as the model, of each experiment are automatically logged with MLFlow.
 Run the following command to observe the details of each experiment:
