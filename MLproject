@@ -13,3 +13,6 @@ entry_points:
     train-explain:
         command: "python Jobs/train.py && \
             python Jobs/explain.py"
+
+    shap:
+        command: "python Jobs/explain.py"
