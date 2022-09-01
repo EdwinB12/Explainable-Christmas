@@ -79,7 +79,7 @@ The CNN is very basic Unet architecture and could probably be improved.
 Likewise, a proper parameter search would also likely improve the segmentation performance significantly. 
 
 
-##Notes
+### Notes
 
 If you're wondering why the repository is called Explainable-Christmas, then this was the name of our team
 for the EAGE-Annual-Hackathon_2022. The members of the team were Edwin Brown and Marcos Jacinto. 
