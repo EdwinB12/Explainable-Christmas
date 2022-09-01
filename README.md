@@ -18,9 +18,9 @@ calculated on a subset of the training data to explain how each input contriubte
 The steps to reproduce this work are: 
 
 1. Download Data from the Kaggle website following the link above.
-2. Split the data into train, validation and test datasets. 
+2. Split the data into train, validation and test datasets. The data is also downsampled from (101, 101) to (48, 48) at this point. 
 3. Create seismic attributes to be used additional features to the original seismic image
-4. Pre-process data for input into training 
+4. Pre-process data for input into training. Data is downsampled from (48x48) to (24x24) at this stage for training and SHAP values calculation.
 5. Build and train a Convolutiona Neural Network (CNN) Segmentation Model
 6. Generate Shap Values for a small subset of the data
 
@@ -32,13 +32,13 @@ install dependencies:
 ## Repository Structure
 
 - [Data](Data): This folder contains all the data needed to run the repository. The data can be downloaded
-[here](https://www.kaggle.com/competitions/tgs-salt-identification-challenge/data). The repository only uses the train.zip file. 
+[here](https://www.kaggle.com/competitions/tgs-salt-identification-challenge/data). The repository only uses the train.zip file. The file structure should be **Data --> train --> images, masks** 
 
 - [Jobs](Jobs) - Python scripts execute steps 1-6 outlined above. 
   - [read_and_split_data.py](Jobs/read_and_split_data.py) - Steps 1 and 2
   - [process_data.py](Jobs/process_data.py) - Steps 3 and 4
   - [train.py](Jobs/train.py) - Step 5
-  - [explain.py](Jobs/explain.py) - Step 6. Please note this script can take several hours and is very expensive if images used are large.
+  - [explain.py](Jobs/explain.py) - Step 6. Please note this script can take several hours and is very expensive if either a large number of images are used or if the images are large. 
 - [outputs](outputs) - This directory holds any midway outputs generated at the end of each script the user may want
   to generate to avoid rerunning sections unnecessarily. 
 
