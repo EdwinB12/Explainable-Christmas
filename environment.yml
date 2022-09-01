@@ -1,0 +1,15 @@
+name: explainable_xmas
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - pip:
+    - tensorflow==2.8.0
+    - matplotlib
+    - ipython
+    - bruges
+    - shap
+    - mlflow
+    - numpy
+    - imageio
+    - scikit-image

@@ -1,14 +1,15 @@
-name: explainable salt
+name: explainable_salt
 
 entry_points:
-    train:
-        command: "python Jobs/process_data.py && \
-            python Jobs/train.py"
-
     run_all:
         command: "python Jobs/process_data.py && \
             python Jobs/train.py && \
             python Jobs/explain.py"
 
-    data_prep:
-        command: "python Jobs/process_data.py"
+    data-train:
+        command: "python Jobs/process_data.py && \
+            python Jobs/train.py"
+
+    train-explain:
+        command: "python Jobs/train.py && \
+            python Jobs/explain.py"
