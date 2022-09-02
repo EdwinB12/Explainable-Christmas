@@ -14,8 +14,8 @@ The segmentation challenge used is the [TGS Salt Identification Challenge](https
 Three different seismic attributes are created from the original input image to create a multi-image input (Amplitude, Semblance and Sobel Filter (edge detection)).
 A Convolutional Neural Network (CNN) is then trained to predict salt masks on unseen examples. Finally, SHAP values are
 calculated on a subset of the training data to explain how each input contributes to the final prediction. The theory behind SHAP is not
-discussed here but additional information can be found in the [docs](https://shap.readthedocs.io/en/latest/index.html), and there is
-this useful [blog](https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30) too.
+discussed here but additional information can be found in the [docs](https://shap.readthedocs.io/en/latest/index.html), and there are are a couple of useful blogs
+[here](https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30) and [here](https://h2o.ai/blog/shapley-values-a-gentle-introduction/). 
 
 The steps to reproduce this work are: 
 
