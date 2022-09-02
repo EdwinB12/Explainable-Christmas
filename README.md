@@ -77,7 +77,7 @@ to be reduced from 101x101 to 24x24. This significantly harms performance of the
 - As the performance of the CNN to perform salt segmentation was not the primary goal of the project, there are several
 changes to the approach that would likely improve the baseline performance. 
 The CNN is very basic Unet architecture and could probably be improved.
-Likewise, a proper parameter search would also likely improve the segmentation performance significantly. Further regularisation would also be useful, most likely dataaugmentation. 
+Likewise, a proper parameter search would also likely improve the segmentation performance significantly. Further regularisation would also be useful, most likely data augmentation. 
 
 
 ### Notes
