@@ -9,11 +9,13 @@ We can then add the contribution from each of the 4 input images (Seismic, Ampli
 until we reach the predicted mask (y_pred), which can be directly compared to the tue mask (y_true).  
 
 ## The Project
-This repository demonstrates how SHAP values can be obtained to give a measure of how important each feature is in a multi-input image segmentation task
+This repository demonstrates how SHapley Additive exPlanations (SHAP) values can be obtained to give a measure of how important each feature is in a multi-input image segmentation task.
 The segmentation challenge used is the [TGS Salt Identification Challenge](https://www.kaggle.com/c/tgs-salt-identification-challenge). 
 Three different seismic attributes are created from the original input image to create a multi-image input (Amplitude, Semblance and Sobel Filter (edge detection)).
 A Convolutional Neural Network (CNN) is then trained to predict salt masks on unseen examples. Finally, SHAP values are
-calculated on a subset of the training data to explain how each input contriubtes to the final prediction. 
+calculated on a subset of the training data to explain how each input contributes to the final prediction. The theory behind SHAP is not
+discussed here but additional information can be found in the [docs](https://shap.readthedocs.io/en/latest/index.html), and there is
+this useful [blog](https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30) too.
 
 The steps to reproduce this work are: 
 
